@@ -1,13 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import LoginForm from "./components/loginForm";
 import Link from "next/link";
 
-export default function SignInPage() {
+export default function LoginPage() {
   return (
     <div className=" w-screen h-screen flex justify-center items-center bg-transparent ">
-      <div className="flex  justify-center h-3/5 bg-transparent 	max-w-screen-lg rounded-lg shadow-2xl	">
+      <div className="flex  justify-center h-4/5 bg-transparent 	max-w-screen-lg rounded-lg shadow-2xl	">
         <div className="flex flex-col justify-center flex-1 px-8 py-12 rounded-l-lg  ">
           <div className="w-full max-w-md mx-auto">
             <h2 className="mb-6 text-3xl text-center font-bold">
