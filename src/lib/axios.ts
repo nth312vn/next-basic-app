@@ -1,4 +1,10 @@
+import { RequestUrl, tokenExcludedRoutes } from "@/constants/url.constant";
 import { refreshTokenService } from "@/services/token.service";
+import {
+  getLocalStorage,
+  removeLocalStorage,
+  setLocalStorage,
+} from "@/utils/localStoreage.util";
 import axios, {
   AxiosError,
   AxiosInstance,
@@ -36,10 +42,10 @@ interface CustomAxiosInstance
 
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-    const requestIgnoreToken = ["login"];
-    if (requestIgnoreToken.includes(config.url || "")) return config;
+    if (config.url && tokenExcludedRoutes.includes(config.url as RequestUrl))
+      return config;
     if (window !== undefined) {
-      const token = localStorage.getItem("accessToken");
+      const token = getLocalStorage("accessToken");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -68,12 +74,12 @@ axiosInstance.interceptors.response.use(
         const refreshToken = localStorage.getItem("refreshToken");
         if (!refreshToken) return Promise.reject(error);
         const newAccessToken = await refreshTokenService(refreshToken);
-        localStorage.setItem("accessToken", newAccessToken);
+        setLocalStorage("accessToken", newAccessToken);
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosInstance(originalRequest);
       } catch (error) {
-        localStorage.removeItem("auth_token");
-        localStorage.removeItem("refresh_token");
+        removeLocalStorage("auth_token");
+        removeLocalStorage("refresh_token");
         if (typeof window !== "undefined") {
           window.location.href = "/login";
         }
