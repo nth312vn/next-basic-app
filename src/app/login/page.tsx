@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
-import LoginForm from "./components/loginForm";
+import LoginForm from "../../components/login/loginForm";
 import Link from "next/link";
 
 export default function LoginPage() {
   return (
-    <div className="flex  justify-center h-4/5 bg-transparent 	max-w-screen-lg rounded-lg shadow-2xl	">
+    <div className="flex  justify-center h-4/5 bg-transparent max-w-screen-lg rounded-lg shadow-2xl	">
       <div className="flex flex-col justify-center flex-1 px-8 py-12 rounded-l-lg  ">
         <div className="w-full max-w-md mx-auto">
           <h2 className="mb-6 text-3xl text-center font-bold">
@@ -49,7 +49,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="flex-1 bg-green-500 w-full h-full rounded-r-lg">
+      <div className="flex-1 bg-green-500 w-full h-full rounded-r-lg xs:hidden sm:block">
         <div className="flex flex-col justify-center h-full p-12 text-white">
           <h2 className="mb-4 text-4xl font-bold text-center">
             Hello, Friend!
