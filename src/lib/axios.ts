@@ -4,10 +4,17 @@ import {
   getLocalStorage,
   removeLocalStorage,
   setLocalStorage,
-} from "@/utils/localStoreage.util";
+} from "@/utils/localStorage.util";
+import {
+  clearSession,
+  getAccessToken,
+  getRefreshToken,
+  setNewAccessToken,
+} from "@/utils/session.util";
 import axios, {
   AxiosError,
   AxiosInstance,
+  AxiosRequestConfig,
   AxiosResponse,
   HttpStatusCode,
   InternalAxiosRequestConfig,
@@ -21,22 +28,22 @@ const axiosInstance = axios.create({
 });
 interface CustomAxiosInstance
   extends Omit<AxiosInstance, "get" | "post" | "put" | "delete" | "patch"> {
-  get<T = any>(url: string, config?: InternalAxiosRequestConfig): Promise<T>;
+  get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
   post<T = any>(
     url: string,
     data?: any,
-    config?: InternalAxiosRequestConfig
+    config?: AxiosRequestConfig
   ): Promise<T>;
   put<T = any>(
     url: string,
     data?: any,
-    config?: InternalAxiosRequestConfig
+    config?: AxiosRequestConfig
   ): Promise<T>;
-  delete<T = any>(url: string, config?: InternalAxiosRequestConfig): Promise<T>;
+  delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
   patch<T = any>(
     url: string,
     data?: any,
-    config?: InternalAxiosRequestConfig
+    config?: AxiosRequestConfig
   ): Promise<T>;
 }
 
@@ -45,9 +52,9 @@ axiosInstance.interceptors.request.use(
     if (config.url && tokenExcludedRoutes.includes(config.url as RequestUrl))
       return config;
     if (window !== undefined) {
-      const token = getLocalStorage("accessToken");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+      const accessToken = getAccessToken();
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
       }
     }
     return config;
@@ -71,15 +78,14 @@ axiosInstance.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
+        const refreshToken = getRefreshToken();
         if (!refreshToken) return Promise.reject(error);
         const newAccessToken = await refreshTokenService(refreshToken);
-        setLocalStorage("accessToken", newAccessToken);
+        setNewAccessToken(newAccessToken);
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosInstance(originalRequest);
       } catch (error) {
-        removeLocalStorage("auth_token");
-        removeLocalStorage("refresh_token");
+        clearSession();
         if (typeof window !== "undefined") {
           window.location.href = "/login";
         }

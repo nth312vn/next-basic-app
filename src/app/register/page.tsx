@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { RegisterForm } from "./components/registerForm";
+import { RegisterForm } from "../../components/register/registerForm";
 
 export default function Register() {
   return (
     <div className="flex h-4/5 bg-gray-100 max-w-screen-lg rounded-lg shadow-2xl">
-      <div className="w-1/2 bg-green-500 p-12 flex flex-col justify-center items-center rounded-l-lg">
+      <div className="w-1/2 bg-green-500 p-12  flex-col justify-center items-center rounded-l-lg xs:hidden sm:flex">
         <div>
           <h1 className="text-white text-center text-4xl font-bold mb-4">
             Welcome Back!
@@ -20,7 +20,7 @@ export default function Register() {
           SIGN IN
         </Link>
       </div>
-      <div className="w-1/2 bg-white p-12 rounded-r-lg">
+      <div className="sm:w-1/2 xs:w-full bg-white p-12 rounded-r-lg">
         <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
           Create Account
         </h2>

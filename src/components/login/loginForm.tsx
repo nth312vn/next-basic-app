@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -12,32 +11,50 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { loginFormSchema } from "@/schema/loginFormSchema";
+import { LoginService, setCookieService } from "@/services/auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { AxiosError } from "axios";
+import ErrorMessage from "../ErrorMessage";
+import useAuth from "@/hooks/useAuth";
 
 export default function LoginForm() {
+  const router = useRouter();
+  const { login } = useAuth();
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
-  const onSubmit = (values: z.infer<typeof loginFormSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {
+    try {
+      const { accessToken, refreshToken } = await LoginService(
+        values.email,
+        values.password
+      );
+      await setCookieService(accessToken);
+      login(accessToken, refreshToken);
+      router.push("/");
+    } catch (e) {
+      if (e instanceof AxiosError)
+        form.setError("root", { message: e.response?.data.message });
+    }
   };
   return (
     <Form {...form}>
-      <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-4 " onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
-          name="username"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="Username" {...field} className="w-full" />
+                <Input placeholder="Email" {...field} className="w-full" />
               </FormControl>
 
               <FormMessage />
@@ -63,7 +80,6 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Checkbox id="remember-me" className="checked:bg-blue-500 " />
@@ -75,6 +91,10 @@ export default function LoginForm() {
             Forgot Password?
           </a>
         </div>
+        <ErrorMessage
+          errorMessage={form.formState.errors.root?.message || ""}
+          errorTitle="Submission Error"
+        />
         <div className="w-full flex justify-center ">
           <Button
             type="submit"
