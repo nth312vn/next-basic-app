@@ -12,3 +12,7 @@ export async function POST(request: Request) {
   });
   return response;
 }
+// code loading button when call api
+// code session backend
+// prisma studio to view data
+//code logout flow call api logout and clear cookie on next server

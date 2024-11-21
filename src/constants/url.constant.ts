@@ -3,6 +3,7 @@ export enum RequestUrl {
   REFRESH_TOKEN = "/refresh",
   REGISTER = "/auth/register",
   SET_COOKIE = "api/auth/login/cookie",
+  LOG_OUT = "/api/auth/logout",
 }
 export const tokenExcludedRoutes = [
   RequestUrl.LOGIN,

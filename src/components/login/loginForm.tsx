@@ -19,10 +19,13 @@ import { z } from "zod";
 import { AxiosError } from "axios";
 import ErrorMessage from "../ErrorMessage";
 import useAuth from "@/hooks/useAuth";
+import LoadingButton from "../LoadingButton";
+import { useState } from "react";
 
 export default function LoginForm() {
   const router = useRouter();
   const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -32,6 +35,7 @@ export default function LoginForm() {
   });
   const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {
     try {
+      setLoading(true);
       const { accessToken, refreshToken } = await LoginService(
         values.email,
         values.password
@@ -42,6 +46,8 @@ export default function LoginForm() {
     } catch (e) {
       if (e instanceof AxiosError)
         form.setError("root", { message: e.response?.data.message });
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -96,12 +102,19 @@ export default function LoginForm() {
           errorTitle="Submission Error"
         />
         <div className="w-full flex justify-center ">
-          <Button
+          {/* <Button
             type="submit"
             className="w-1/2 mt-5 bg-green-500 hover:bg-green-600 text-white rounded-full"
           >
             Sign In
-          </Button>
+          </Button> */}
+          <LoadingButton
+            className="w-1/2 mt-5 bg-green-500 hover:bg-green-600 text-white rounded-full"
+            loading={loading}
+            type="submit"
+          >
+            Sign In
+          </LoadingButton>
         </div>
       </form>
     </Form>

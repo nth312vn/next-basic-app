@@ -30,3 +30,8 @@ export const setCookieService = (accessToken: string) => {
     }
   );
 };
+export const logoutService = (refreshToken: string) => {
+  return axiosInstance.post(RequestUrl.LOG_OUT, {
+    token: refreshToken,
+  });
+};
