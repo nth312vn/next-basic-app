@@ -7,15 +7,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { clearCookieService, logoutService } from "@/services/auth.service";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import useAuth from "@/hooks/useAuth";
 
 export default function AccountMenuButton({
   trigger,
 }: {
   trigger: React.ReactNode;
 }) {
-  const handleLogout = () => {
-    console.log("Logging out...");
-    // Add your logout logic here
+  const router = useRouter();
+  const { logout } = useAuth();
+  const handleLogout = async () => {
+    try {
+      await logoutService();
+      await clearCookieService();
+      logout();
+      router.push("/login");
+    } catch {
+      toast.error("Failed to logout");
+    }
   };
   return (
     <DropdownMenu>

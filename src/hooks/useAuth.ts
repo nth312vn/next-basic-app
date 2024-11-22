@@ -2,10 +2,7 @@
 import { useLocalStorage } from "react-use";
 
 export default function useAuth() {
-  const [value, setValue, remove] = useLocalStorage("session", {
-    accessToken: "",
-    refreshToken: "",
-  });
+  const [value, setValue, remove] = useLocalStorage("session");
   const login = (accessToken: string, refreshToken: string) => {
     setValue({
       accessToken,

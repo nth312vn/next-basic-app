@@ -40,7 +40,7 @@ export default function LoginForm() {
         values.email,
         values.password
       );
-      await setCookieService(accessToken);
+      await setCookieService(accessToken, refreshToken);
       login(accessToken, refreshToken);
       router.push("/");
     } catch (e) {

@@ -19,19 +19,23 @@ export const registerService = (params: RegisterServiceParams) => {
     params
   );
 };
-export const setCookieService = (accessToken: string) => {
+export const setCookieService = (accessToken: string, refreshToken: string) => {
   return axiosInstance.post(
     RequestUrl.SET_COOKIE,
     {
       accessToken,
+      refreshToken,
     },
     {
       baseURL: "",
     }
   );
 };
-export const logoutService = (refreshToken: string) => {
-  return axiosInstance.post(RequestUrl.LOG_OUT, {
-    token: refreshToken,
+export const clearCookieService = () => {
+  return axiosInstance.post(RequestUrl.CLEAR_COOKIE, null, {
+    baseURL: "",
   });
+};
+export const logoutService = () => {
+  return axiosInstance.post(RequestUrl.LOG_OUT);
 };

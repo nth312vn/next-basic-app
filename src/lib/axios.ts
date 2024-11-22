@@ -1,15 +1,16 @@
-import { RequestUrl, tokenExcludedRoutes } from "@/constants/url.constant";
-import { refreshTokenService } from "@/services/token.service";
 import {
-  getLocalStorage,
-  removeLocalStorage,
-  setLocalStorage,
-} from "@/utils/localStorage.util";
+  apiIgnoreUnauthorized,
+  RequestUrl,
+  tokenExcludedRoutes,
+} from "@/constants/url.constant";
+import { clearCookieService, setCookieService } from "@/services/auth.service";
+import { refreshTokenService } from "@/services/token.service";
+
 import {
   clearSession,
   getAccessToken,
   getRefreshToken,
-  setNewAccessToken,
+  setNewSession,
 } from "@/utils/session.util";
 import axios, {
   AxiosError,
@@ -74,17 +75,21 @@ axiosInstance.interceptors.response.use(
 
     if (
       error.status === HttpStatusCode.Unauthorized &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      !apiIgnoreUnauthorized.includes(originalRequest.url as RequestUrl)
     ) {
       originalRequest._retry = true;
       try {
         const refreshToken = getRefreshToken();
         if (!refreshToken) return Promise.reject(error);
-        const newAccessToken = await refreshTokenService(refreshToken);
-        setNewAccessToken(newAccessToken);
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+          await refreshTokenService(refreshToken);
+        setNewSession(newAccessToken, newRefreshToken);
+        await setCookieService(newAccessToken, newRefreshToken);
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosInstance(originalRequest);
       } catch (error) {
+        await clearCookieService();
         clearSession();
         if (typeof window !== "undefined") {
           window.location.href = "/login";

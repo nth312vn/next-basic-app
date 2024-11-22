@@ -5,9 +5,8 @@ import {
   setLocalStorage,
 } from "./localStorage.util";
 
-export const setNewAccessToken = (token: string) => {
-  const session = getLocalStorage(localStorageKeys.SESSION);
-  const newSession = { ...session, accessToken: token };
+export const setNewSession = (accessToken: string, refreshToken: string) => {
+  const newSession = { accessToken, refreshToken };
   setLocalStorage(localStorageKeys.SESSION, newSession);
 };
 export const clearSession = () => {

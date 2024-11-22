@@ -10,3 +10,7 @@ export interface RegisterServiceParams {
 export interface RegisterServiceResponse {
   message: string;
 }
+export interface RefreshTokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
